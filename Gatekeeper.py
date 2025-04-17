@@ -1,19 +1,29 @@
+from flask import Flask, request
 import datetime
-now = datetime.datetime.now()
 
-numberPlate = ["P11-09", "J12-32", "J62-59"] 
+app = Flask(__name__)
 
-print('Voer hier uw nummerplaat in:')
-x = input()
+numberPlate = ["P11-09", "J12-32", "J62-59"]
 
-if x in numberPlate:
+@app.route('/')
+def check_plate():
+    x = request.args.get('plate')
+    if not x:
+        return "Gebruik: /?plate=<nummerplaat>", 400
 
-    if now.hour>=7 and now.hour<=12:
-        print("Goedemorgen! Welkom bij Fonteyn Vakantieparken")
-    elif now.hour>=12 and now.hour<=18:
-        print("Goedemiddag! Welkom bij Fonteyn Vakantieparken")
-    elif now.hour>=18 and now.hour<=23:
-        print("Goedeavond! Welkom bij Fonteyn Vakantieparken")
+    now = datetime.datetime.now()
 
-else:
-    print ("verkeerde kenteken")
+    if x in numberPlate:
+        if 7 <= now.hour < 12:
+            return "Goedemorgen! Welkom bij Fonteyn Vakantieparken"
+        elif 12 <= now.hour < 18:
+            return "Goedemiddag! Welkom bij Fonteyn Vakantieparken"
+        elif 18 <= now.hour < 23:
+            return "Goedeavond! Welkom bij Fonteyn Vakantieparken"
+        else:
+            return "Welkom! (buiten standaarduren)"
+    else:
+        return "Verkeerde kenteken", 403
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
